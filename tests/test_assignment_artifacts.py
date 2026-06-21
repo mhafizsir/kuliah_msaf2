@@ -14,22 +14,22 @@ class AssignmentArtifactTests(unittest.TestCase):
         text = SLIDES.read_text(encoding="utf-8")
 
         required_phrases = [
-            "friend's draft",
+            "draft teman",
             "Poisson",
             "Bayes",
             "Gamma",
-            "why this prior",
+            "mengapa prior ini",
             "posterior",
-            "posterior predictive",
+            "prediktif posterior",
             "2010",
             "2014",
             "2018",
             "2022",
             "1930-2018",
-            "actual 2022",
-            "predicted probability",
-            "over 2.5 goals",
-            "limitations",
+            "aktual 2022",
+            "probabilitas prediksi",
+            "lebih dari 2.5 gol",
+            "keterbatasan",
         ]
 
         for phrase in required_phrases:
@@ -56,7 +56,8 @@ class AssignmentArtifactTests(unittest.TestCase):
 
         self.assertIn("Bayesian Poisson", markdown)
         self.assertIn("Gamma", markdown)
-        self.assertIn("Posterior predictive", markdown)
+        self.assertIn("Prediktif posterior", markdown)
+        self.assertIn("Bahasa Indonesia", markdown)
         self.assertIn("train_years = [2010, 2014, 2018]", code)
         self.assertIn("test_year = 2022", code)
         self.assertIn("alpha_post = alpha_prior + train_total_goals", code)
