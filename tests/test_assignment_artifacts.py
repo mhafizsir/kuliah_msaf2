@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import unittest
 from pathlib import Path
@@ -111,6 +112,23 @@ class AssignmentArtifactTests(unittest.TestCase):
 
             with self.subTest(year=year):
                 self.assertEqual(len(scored), expected)
+
+    def test_notebook_code_runs_when_kernel_starts_in_notebook_folder(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        namespace = {"__name__": "__notebook_test__"}
+        original_cwd = Path.cwd()
+
+        try:
+            os.chdir(NOTEBOOK.parent)
+            for index, cell in enumerate(notebook["cells"], start=1):
+                if cell.get("cell_type") == "code":
+                    source = "".join(cell.get("source", []))
+                    exec(compile(source, f"{NOTEBOOK.name}#cell-{index}", "exec"), namespace)
+        finally:
+            os.chdir(original_cwd)
+
+        self.assertEqual(namespace["train_match_count"], 192)
+        self.assertEqual(len(namespace["test_goals"]), 64)
 
 
 if __name__ == "__main__":
