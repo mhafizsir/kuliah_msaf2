@@ -22,14 +22,18 @@ class AssignmentArtifactTests(unittest.TestCase):
             "mengapa prior ini",
             "posterior",
             "prediktif posterior",
-            "2010",
             "2014",
             "2018",
             "2022",
-            "1930-2018",
-            "aktual 2022",
+            "2026",
+            "171",
+            "169",
+            "172",
+            "512",
+            "513",
+            "193",
             "probabilitas prediksi",
-            "lebih dari 2.5 gol",
+            "goodness-of-fit",
             "keterbatasan",
         ]
 
@@ -57,17 +61,20 @@ class AssignmentArtifactTests(unittest.TestCase):
 
         self.assertIn("Bayesian Poisson", markdown)
         self.assertIn("Gamma", markdown)
-        self.assertIn("Prediktif posterior", markdown)
+        self.assertIn("prediktif posterior", markdown.lower())
         self.assertIn("Bahasa Indonesia", markdown)
-        self.assertIn("train_years = [2010, 2014, 2018]", code)
-        self.assertIn("test_year = 2022", code)
+        self.assertIn("analysis_years = [2014, 2018, 2022]", code)
+        self.assertIn("alpha_prior = 1.0", code)
+        self.assertIn("beta_prior = 1.0", code)
+        self.assertIn("score_for_model", code)
         self.assertIn("alpha_post = alpha_prior + train_total_goals", code)
         self.assertIn("beta_post = beta_prior + train_match_count", code)
         self.assertIn("negative_binomial_predictive_pmf", code)
         self.assertIn("ascii_bar_chart", code)
-        self.assertIn("actual_vs_predicted_rows", code)
-        self.assertIn("credible_interval", code)
-        self.assertIn("all_prior_years", code)
+        self.assertIn("predictive_rows", code)
+        self.assertIn("credible_interval_from_pmf", code)
+        self.assertIn("goodness_of_fit_rows", code)
+        self.assertIn("posterior untuk 2026", markdown.lower())
 
     def test_visible_language_is_polished_indonesian(self):
         visible_text = SLIDES.read_text(encoding="utf-8")
@@ -92,6 +99,14 @@ class AssignmentArtifactTests(unittest.TestCase):
             "Comparison of expected",
             "Posterior Predictive Distribution",
             "Historical Training Choice",
+            "data latih:",
+            "data evaluasi:",
+            "2010-2018",
+            "1930-2018",
+            "false positive",
+            "false negative",
+            "mean absolute error",
+            "root mean squared error",
         ]
 
         for phrase in awkward_phrases:
@@ -99,7 +114,7 @@ class AssignmentArtifactTests(unittest.TestCase):
                 self.assertNotIn(phrase.lower(), visible_text.lower())
 
     def test_worldcup_dataset_expected_modern_match_counts(self):
-        expected_counts = {2010: 64, 2014: 64, 2018: 64, 2022: 64}
+        expected_counts = {2014: 64, 2018: 64, 2022: 64}
 
         for year, expected in expected_counts.items():
             path = ROOT / "worldcup.json" / str(year) / "worldcup.json"
@@ -112,6 +127,25 @@ class AssignmentArtifactTests(unittest.TestCase):
 
             with self.subTest(year=year):
                 self.assertEqual(len(scored), expected)
+
+    def test_draft_aggregate_goal_totals_are_reproduced(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        namespace = {"__name__": "__notebook_test__"}
+        original_cwd = Path.cwd()
+
+        try:
+            os.chdir(ROOT)
+            for index, cell in enumerate(notebook["cells"], start=1):
+                if cell.get("cell_type") == "code":
+                    source = "".join(cell.get("source", []))
+                    exec(compile(source, f"{NOTEBOOK.name}#cell-{index}", "exec"), namespace)
+        finally:
+            os.chdir(original_cwd)
+
+        self.assertEqual(namespace["train_match_count"], 192)
+        self.assertEqual(namespace["train_total_goals"], 512)
+        self.assertEqual(namespace["alpha_post"], 513.0)
+        self.assertEqual(namespace["beta_post"], 193.0)
 
     def test_notebook_code_runs_when_kernel_starts_in_notebook_folder(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
@@ -128,7 +162,7 @@ class AssignmentArtifactTests(unittest.TestCase):
             os.chdir(original_cwd)
 
         self.assertEqual(namespace["train_match_count"], 192)
-        self.assertEqual(len(namespace["test_goals"]), 64)
+        self.assertEqual(namespace["train_total_goals"], 512)
 
 
 if __name__ == "__main__":

@@ -2,11 +2,11 @@
 
 Posisi materi:
 
-> Materi ini melanjutkan draft teman sebagai dasar riset, lalu merapikannya menjadi studi kasus Bayesian Poisson yang fokus pada jumlah gol Piala Dunia.
+> Materi ini melanjutkan draft teman sebagai dasar riset, lalu merapikannya menjadi studi kasus Bayesian Poisson untuk jumlah gol Piala Dunia.
 
-Gagasan utama:
+Tujuan utama:
 
-> Tujuan utama bukan membuat AI prediksi sepak bola. Tujuan utama adalah menjelaskan inferensi Bayesian untuk data hitungan.
+> Menjelaskan inferensi Bayesian untuk data hitungan, bukan membuat sistem prediksi sepak bola yang kompleks.
 
 ---
 
@@ -20,7 +20,7 @@ Gol sepak bola adalah data hitungan:
 - 3 gol
 - dan seterusnya
 
-Karena jumlah gol berbentuk bilangan bulat tidak negatif, distribusi Poisson cocok sebagai model awal.
+Karena nilainya berupa bilangan bulat tidak negatif, distribusi Poisson cocok sebagai model awal.
 
 Dataset Piala Dunia memberi contoh nyata untuk menjelaskan konsep matematisnya.
 
@@ -32,9 +32,9 @@ Pertanyaan utama:
 
 > Bagaimana model Bayesian Poisson dapat digunakan untuk memodelkan jumlah gol dalam satu pertandingan Piala Dunia?
 
-Demonstrasi tambahan:
+Pertanyaan lanjutan:
 
-> Jika model dibangun dari Piala Dunia 2010, 2014, dan 2018, apakah jumlah gol pada Piala Dunia 2022 masih konsisten dengan model?
+> Berdasarkan Piala Dunia 2014, 2018, dan 2022, seperti apa distribusi prediktif posterior untuk jumlah gol pada satu pertandingan Piala Dunia 2026?
 
 ---
 
@@ -74,32 +74,32 @@ $$
 Keterangan:
 
 - \( y \): jumlah gol yang diamati
-- \( \lambda \): rata-rata gol yang diharapkan per pertandingan
+- \( \lambda \): rata-rata gol per pertandingan
 - \( \lambda > 0 \)
 
-Jika \( \lambda = 2.5 \), model mengharapkan sekitar 2.5 gol per pertandingan.
+Jika \( \lambda \) besar, pertandingan dengan banyak gol menjadi lebih mungkin. Jika \( \lambda \) kecil, pertandingan dengan sedikit gol menjadi lebih mungkin.
 
 ---
 
-# Apa yang Ditambahkan Bayesian?
+# Apa yang Ditambahkan Bayes?
 
-Dalam model Poisson biasa, \( \lambda \) dipandang sebagai nilai tetap yang tidak diketahui.
+Dalam model Poisson biasa, \( \lambda \) sering dipandang sebagai satu nilai tetap yang tidak diketahui.
 
-Dalam inferensi Bayesian, \( \lambda \) dipandang sebagai sesuatu yang tidak pasti.
+Dalam inferensi Bayes, \( \lambda \) dipandang sebagai parameter yang masih tidak pasti.
 
 Kita tidak hanya bertanya:
 
-> Berapa satu estimasi terbaik untuk \( \lambda \)?
+> Berapa estimasi terbaik untuk \( \lambda \)?
 
-Tetapi bertanya:
+Tetapi juga:
 
-> Setelah melihat data, seberapa kuat keyakinan kita terhadap berbagai nilai \( \lambda \)?
+> Setelah melihat data, seberapa besar keyakinan kita terhadap berbagai nilai \( \lambda \)?
 
 ---
 
 # Teorema Bayes
 
-Inferensi Bayesian didasarkan pada:
+Inferensi Bayes didasarkan pada:
 
 $$
 P(\theta \mid data) =
@@ -124,9 +124,9 @@ posterior = likelihood dari data x prior
 
 # Distribusi Prior
 
-Sebelum melihat data Piala Dunia, kita memberikan keyakinan awal terhadap \( \lambda \).
+Sebelum melihat data, kita memberi keyakinan awal terhadap \( \lambda \).
 
-Karena \( \lambda \) harus bernilai positif, kita menggunakan prior Gamma:
+Karena \( \lambda \) harus bernilai positif, prior yang dipakai adalah Gamma:
 
 $$
 \lambda \sim \text{Gamma}(\alpha, \beta)
@@ -156,35 +156,55 @@ Konjugat berarti:
 
 > Jika prior adalah Gamma dan likelihood adalah Poisson, maka posterior juga berbentuk Gamma.
 
-Ini membuat perhitungan matematis menjadi bersih dan cocok untuk mata kuliah Mathematical and Statistical Foundations.
+Ini membuat perhitungan matematis bersih dan cocok untuk mata kuliah Mathematical and Statistical Foundations.
 
 ---
 
 # Mengapa Prior Ini?
 
-Di notebook, prior yang digunakan adalah:
+Sesuai draft, prior utama yang dipakai adalah:
 
 $$
-\lambda \sim \text{Gamma}(5, 2)
+\lambda \sim \text{Gamma}(1,1)
 $$
 
 Rata-rata prior:
 
 $$
-E[\lambda] = \frac{5}{2} = 2.5
+E[\lambda] = \frac{1}{1} = 1
 $$
 
-Alasannya:
+Interpretasi:
 
-- Piala Dunia modern biasanya memiliki rata-rata sekitar 2 sampai 3 gol per pertandingan
-- 2.5 adalah keyakinan awal yang masuk akal sebelum melihat data latih
-- pengaruh prior ini relatif kecil dibandingkan 192 pertandingan latih dari 2010-2018
-
-Jadi prior memberi arah awal, tetapi posterior tetap didominasi oleh data.
+- prior ini lemah dan sederhana
+- prior tidak memaksa rata-rata gol harus dekat nilai tertentu
+- setelah 192 pertandingan diamati, posterior lebih banyak dipengaruhi data
 
 ---
 
-# Likelihood dari Data Pertandingan
+# Data yang Dipakai
+
+Data utama mengikuti draft:
+
+```text
+Piala Dunia 2014
+Piala Dunia 2018
+Piala Dunia 2022
+```
+
+Ringkasan data:
+
+| Edisi | Pertandingan | Total gol | Rata-rata |
+|---|---:|---:|---:|
+| 2014 | 64 | 171 | 2.672 |
+| 2018 | 64 | 169 | 2.641 |
+| 2022 | 64 | 172 | 2.688 |
+
+Total: 192 pertandingan dan 512 gol.
+
+---
+
+# Likelihood dari Data
 
 Misalkan kita mengamati \( n \) pertandingan:
 
@@ -195,13 +215,13 @@ $$
 Setiap jumlah gol pertandingan diasumsikan mengikuti:
 
 $$
-Y_i \sim \text{Poisson}(\lambda)
+Y_i \mid \lambda \sim \text{Poisson}(\lambda)
 $$
 
 Ringkasan data yang penting:
 
-- total gol: \( \sum y_i \)
-- jumlah pertandingan: \( n \)
+- total gol: \( \sum y_i = 512 \)
+- jumlah pertandingan: \( n = 192 \)
 
 ---
 
@@ -215,110 +235,81 @@ $$
 \text{Gamma}(\alpha + \sum y_i, \beta + n)
 $$
 
-Sehingga:
+Karena priornya \( \text{Gamma}(1,1) \), maka:
 
 $$
-\alpha_{post} = \alpha + \sum y_i
+\lambda \mid data
+\sim
+\text{Gamma}(1 + 512, 1 + 192)
 $$
 
+Jadi:
+
 $$
-\beta_{post} = \beta + n
+\lambda \mid data
+\sim
+\text{Gamma}(513,193)
 $$
 
 Rata-rata posterior:
 
 $$
-E[\lambda \mid data] =
-\frac{\alpha_{post}}{\beta_{post}}
+E[\lambda \mid data] = \frac{513}{193} = 2.658
 $$
+
+---
+
+# Goodness-of-Fit
+
+Notebook tidak hanya menghitung posterior. Notebook juga mengecek apakah pola frekuensi gol terlihat wajar untuk model Poisson.
+
+Langkahnya:
+
+- hitung frekuensi aktual untuk 0 gol, 1 gol, 2 gol, dan seterusnya
+- hitung frekuensi yang diharapkan dari Poisson dengan rata-rata posterior
+- bandingkan keduanya secara tabel dan grafik
+- hitung statistik chi-square deskriptif
+
+Bagian ini membantu menjawab apakah Poisson cukup masuk akal sebagai model agregat.
 
 ---
 
 # Prediktif Posterior
 
-Setelah posterior diperoleh, kita dapat memprediksi jumlah gol pertandingan berikutnya.
+Setelah posterior diperoleh, kita dapat memprediksi jumlah gol pada pertandingan baru.
 
-Prediksi Bayesian menghasilkan distribusi peluang:
+Prediksi Bayes menghasilkan distribusi peluang:
 
 ```text
-P(pertandingan berikutnya memiliki 0 gol)
-P(pertandingan berikutnya memiliki 1 gol)
-P(pertandingan berikutnya memiliki 2 gol)
-P(pertandingan berikutnya memiliki 3 gol)
+P(pertandingan baru memiliki 0 gol)
+P(pertandingan baru memiliki 1 gol)
+P(pertandingan baru memiliki 2 gol)
+P(pertandingan baru memiliki 3 gol)
 ...
 ```
 
 Ini disebut distribusi prediktif posterior.
 
-Keunggulannya: model tidak hanya memberi satu angka prediksi, tetapi juga ketidakpastian prediksi.
+Keunggulannya: model tidak hanya memberi satu angka prediksi, tetapi juga memperlihatkan ketidakpastian prediksi.
 
 ---
 
-# Rencana Dataset
+# Prediksi untuk 2026
 
-Data latih:
+Dengan posterior \( \text{Gamma}(513,193) \), prediksi untuk satu pertandingan Piala Dunia 2026 dihitung dengan distribusi prediktif posterior Gamma-Poisson.
 
-```text
-Piala Dunia 2010
-Piala Dunia 2014
-Piala Dunia 2018
-```
+Probabilitas prediksi diringkas sebagai peluang beberapa rentang jumlah gol.
 
-Data evaluasi:
+Contoh hasil notebook:
 
-```text
-Piala Dunia 2022
-```
+- peluang 0 sampai 1 gol: sekitar 0.257
+- peluang 2 sampai 3 gol: sekitar 0.466
+- peluang 4 gol atau lebih: sekitar 0.277
+- interval prediktif 90%: 0 sampai 6 gol
 
-Alasan:
+Interpretasi:
 
-- 2022 sudah lengkap
-- Piala Dunia modern memiliki pola skor yang relatif lebih mirip
-- turnamen lama memiliki format dan pola gol yang berbeda
-
----
-
-# Evaluasi
-
-Karena model memprediksi data hitungan, evaluasi utama juga sebaiknya berbasis hitungan.
-
-Pemeriksaan yang digunakan:
-
-- membandingkan rata-rata prediksi dengan rata-rata aktual 2022
-- menghitung mean absolute error
-- menghitung root mean squared error
-- mengecek apakah gol aktual 2022 masuk akal dalam distribusi prediktif posterior
-
-Klasifikasi opsional:
-
-```text
-positif = lebih dari 2.5 gol
-negatif = 2 gol atau kurang
-```
-
-Dari sini kita dapat menghitung true positive, false positive, true negative, dan false negative.
-
----
-
-# Aktual 2022 vs Prediksi Model
-
-Notebook membandingkan frekuensi gol aktual 2022 dengan probabilitas prediksi dari distribusi prediktif posterior.
-
-Contoh interpretasi:
-
-```text
-Jika model memberi probabilitas tinggi untuk 2 atau 3 gol,
-maka banyak pertandingan 2022 dengan 2 atau 3 gol masih masuk akal.
-```
-
-Kita juga membandingkan dua pilihan data latih:
-
-```text
-Model modern: 2010-2018
-Model historis: 1930-2018
-```
-
-Perbandingan ini menjelaskan mengapa data Piala Dunia yang sangat lama belum tentu menjadi acuan terbaik untuk sepak bola modern.
+> Model memperkirakan pertandingan dengan 2 atau 3 gol paling umum, tetapi pertandingan dengan skor rendah atau tinggi tetap mungkin.
 
 ---
 
@@ -329,15 +320,15 @@ Kekuatan:
 - struktur matematis sederhana
 - cocok untuk data hitungan
 - menunjukkan prior, likelihood, posterior, dan prediksi
-- mudah direproduksi di Jupyter
+- mudah dijalankan di Jupyter
 
 Keterbatasan:
 
 - semua pertandingan memakai satu rata-rata gol yang sama
-- kekuatan tim tidak dimodelkan
-- kekuatan lawan diabaikan
-- fase grup dan knockout diperlakukan sama
-- kejadian gol mungkin tidak sepenuhnya independen
+- kekuatan tim belum dimodelkan
+- fase grup dan fase gugur belum dibedakan
+- skor rendah dapat membutuhkan koreksi khusus
+- model hierarkis dapat menjadi pengembangan lanjutan
 
 ---
 
@@ -348,11 +339,11 @@ Model Bayesian Poisson cocok untuk menjelaskan pemodelan data hitungan.
 Dalam tugas ini:
 
 - Poisson memodelkan total gol per pertandingan
-- inferensi Bayesian memperbarui ketidakpastian tentang \( \lambda \)
+- Bayes memperbarui ketidakpastian tentang \( \lambda \)
 - prior Gamma menghasilkan posterior konjugat yang rapi
-- data Piala Dunia menjadi demonstrasi nyata
-- Jupyter menunjukkan alur perhitungan dari awal sampai akhir
+- data 2014, 2018, dan 2022 menghasilkan posterior \( \text{Gamma}(513,193) \)
+- distribusi prediktif posterior memberi prediksi probabilistik untuk 2026
 
 Framing akhir:
 
-> Draft awal dikembangkan menjadi penjelasan statistik yang lebih fokus, lalu didukung dengan notebook Piala Dunia yang dapat direproduksi.
+> Draft teman tetap menjadi arah utama, lalu notebook menambahkan perhitungan, visualisasi, goodness-of-fit, dan prediksi 2026 secara konsisten.
