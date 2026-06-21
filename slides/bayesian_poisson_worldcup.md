@@ -2,7 +2,7 @@
 
 Posisi materi:
 
-> Presentasi ini berangkat dari draft teman sebagai dasar riset, lalu dipoles menjadi studi kasus Bayesian Poisson yang lebih fokus untuk data jumlah gol Piala Dunia.
+> Materi ini melanjutkan draft teman sebagai dasar riset, lalu merapikannya menjadi studi kasus Bayesian Poisson yang fokus pada jumlah gol Piala Dunia.
 
 Gagasan utama:
 
@@ -34,7 +34,7 @@ Pertanyaan utama:
 
 Demonstrasi tambahan:
 
-> Jika model belajar dari Piala Dunia 2010, 2014, dan 2018, apakah jumlah gol pada Piala Dunia 2022 masih masuk akal menurut model?
+> Jika model dibangun dari Piala Dunia 2010, 2014, dan 2018, apakah jumlah gol pada Piala Dunia 2022 masih konsisten dengan model?
 
 ---
 
@@ -64,7 +64,7 @@ $$
 
 # Distribusi Poisson
 
-Peluang mengamati tepat \( y \) gol adalah:
+Peluang untuk mendapatkan tepat \( y \) gol adalah:
 
 $$
 P(Y = y \mid \lambda) =
@@ -177,8 +177,8 @@ $$
 Alasannya:
 
 - Piala Dunia modern biasanya memiliki rata-rata sekitar 2 sampai 3 gol per pertandingan
-- 2.5 adalah keyakinan awal yang masuk akal sebelum melihat data training
-- prior ini lemah dibandingkan 192 pertandingan training dari 2010-2018
+- 2.5 adalah keyakinan awal yang masuk akal sebelum melihat data latih
+- pengaruh prior ini relatif kecil dibandingkan 192 pertandingan latih dari 2010-2018
 
 Jadi prior memberi arah awal, tetapi posterior tetap didominasi oleh data.
 
@@ -256,7 +256,7 @@ Keunggulannya: model tidak hanya memberi satu angka prediksi, tetapi juga ketida
 
 # Rencana Dataset
 
-Data training:
+Data latih:
 
 ```text
 Piala Dunia 2010
@@ -311,7 +311,7 @@ Jika model memberi probabilitas tinggi untuk 2 atau 3 gol,
 maka banyak pertandingan 2022 dengan 2 atau 3 gol masih masuk akal.
 ```
 
-Kita juga membandingkan dua pilihan training:
+Kita juga membandingkan dua pilihan data latih:
 
 ```text
 Model modern: 2010-2018
@@ -348,11 +348,11 @@ Model Bayesian Poisson cocok untuk menjelaskan pemodelan data hitungan.
 Dalam tugas ini:
 
 - Poisson memodelkan total gol per pertandingan
-- Bayesian inference memperbarui ketidakpastian tentang \( \lambda \)
+- inferensi Bayesian memperbarui ketidakpastian tentang \( \lambda \)
 - prior Gamma menghasilkan posterior konjugat yang rapi
 - data Piala Dunia menjadi demonstrasi nyata
-- Jupyter menunjukkan perhitungan end-to-end
+- Jupyter menunjukkan alur perhitungan dari awal sampai akhir
 
 Framing akhir:
 
-> Kita memoles draft teman menjadi penjelasan statistik yang fokus, lalu mendukungnya dengan notebook Piala Dunia yang reproducible.
+> Draft awal dikembangkan menjadi penjelasan statistik yang lebih fokus, lalu didukung dengan notebook Piala Dunia yang dapat direproduksi.

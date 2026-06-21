@@ -68,6 +68,35 @@ class AssignmentArtifactTests(unittest.TestCase):
         self.assertIn("credible_interval", code)
         self.assertIn("all_prior_years", code)
 
+    def test_visible_language_is_polished_indonesian(self):
+        visible_text = SLIDES.read_text(encoding="utf-8")
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+
+        for cell in notebook["cells"]:
+            if cell.get("cell_type") == "markdown":
+                visible_text += "\n" + "".join(cell.get("source", []))
+
+        awkward_phrases = [
+            "data training",
+            "model utama",
+            "diberi prior",
+            "mengamati tepat",
+            "turnamen modern",
+            "masuk akal menurut model",
+            "berangkat dari draft teman",
+            "memoles draft teman",
+            "reproducible",
+            "end-to-end",
+            "Actual 2022",
+            "Comparison of expected",
+            "Posterior Predictive Distribution",
+            "Historical Training Choice",
+        ]
+
+        for phrase in awkward_phrases:
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase.lower(), visible_text.lower())
+
     def test_worldcup_dataset_expected_modern_match_counts(self):
         expected_counts = {2010: 64, 2014: 64, 2018: 64, 2022: 64}
 
