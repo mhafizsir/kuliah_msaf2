@@ -19,7 +19,17 @@ class AssignmentArtifactTests(unittest.TestCase):
             "Poisson",
             "Bayes",
             "Gamma",
-            "mengapa prior ini",
+            "Apa Itu Poisson",
+            "Apa Itu Bayes",
+            "Penggunaan Umum",
+            "Apa yang Kita Lakukan",
+            "Mengapa Model Ini Cocok",
+            "Contoh Manual Poisson",
+            "Contoh Manual Bayes Sederhana",
+            "Contoh Manual Gamma-Poisson",
+            "Perhitungan Manual Data Asli",
+            "Rumus Prediktif Posterior",
+            "mengapa prior gamma",
             "posterior",
             "prediktif posterior",
             "2014",
@@ -32,9 +42,17 @@ class AssignmentArtifactTests(unittest.TestCase):
             "512",
             "513",
             "193",
-            "probabilitas prediksi",
+            "prediksi probabilistik",
             "goodness-of-fit",
             "keterbatasan",
+            "Sumber",
+            "NIST",
+            "Stanford Encyclopedia",
+            "Gelman",
+            "Think Bayes",
+            "Maher",
+            "Dixon",
+            "Panduan Gambar",
         ]
 
         for phrase in required_phrases:
@@ -42,8 +60,8 @@ class AssignmentArtifactTests(unittest.TestCase):
                 self.assertIn(phrase.lower(), text.lower())
 
         slide_count = len(re.findall(r"^---$", text, flags=re.MULTILINE)) + 1
-        self.assertGreaterEqual(slide_count, 12)
-        self.assertLessEqual(slide_count, 18)
+        self.assertGreaterEqual(slide_count, 24)
+        self.assertLessEqual(slide_count, 38)
 
     def test_notebook_has_executable_bayesian_poisson_workflow(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
