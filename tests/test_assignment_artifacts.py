@@ -15,20 +15,15 @@ class AssignmentArtifactTests(unittest.TestCase):
         text = SLIDES.read_text(encoding="utf-8")
 
         required_phrases = [
-            "draft teman",
             "Poisson",
             "Bayes",
             "Gamma",
-            "Apa Itu Poisson",
-            "Apa Itu Bayes",
-            "Penggunaan Umum",
-            "Apa yang Kita Lakukan",
+            "Tujuan Analisis",
+            "Pertanyaan Penelitian",
+            "Data",
+            "Model",
             "Mengapa Model Ini Cocok",
-            "Contoh Manual Poisson",
-            "Contoh Manual Bayes Sederhana",
-            "Contoh Manual Gamma-Poisson",
-            "Perhitungan Manual Data Asli",
-            "Rumus Prediktif Posterior",
+            "Hasil Posterior",
             "mengapa prior gamma",
             "posterior",
             "prediktif posterior",
@@ -52,7 +47,6 @@ class AssignmentArtifactTests(unittest.TestCase):
             "Think Bayes",
             "Maher",
             "Dixon",
-            "Panduan Gambar",
         ]
 
         for phrase in required_phrases:
@@ -60,8 +54,25 @@ class AssignmentArtifactTests(unittest.TestCase):
                 self.assertIn(phrase.lower(), text.lower())
 
         slide_count = len(re.findall(r"^---$", text, flags=re.MULTILINE)) + 1
-        self.assertGreaterEqual(slide_count, 24)
-        self.assertLessEqual(slide_count, 38)
+        self.assertGreaterEqual(slide_count, 10)
+        self.assertLessEqual(slide_count, 14)
+
+    def test_slide_markdown_uses_student_presentation_framing(self):
+        text = SLIDES.read_text(encoding="utf-8")
+
+        meta_phrases = [
+            "Gambar yang disarankan",
+            "Panduan Gambar",
+            "Outline Presentasi",
+            "gunakan ini",
+            "jangan taruh",
+            "saran praktis",
+            "draft teman",
+        ]
+
+        for phrase in meta_phrases:
+            with self.subTest(phrase=phrase):
+                self.assertNotIn(phrase.lower(), text.lower())
 
     def test_notebook_has_executable_bayesian_poisson_workflow(self):
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
@@ -81,6 +92,8 @@ class AssignmentArtifactTests(unittest.TestCase):
         self.assertIn("Gamma", markdown)
         self.assertIn("prediktif posterior", markdown.lower())
         self.assertIn("Bahasa Indonesia", markdown)
+        self.assertIn("Tujuan Analisis", markdown)
+        self.assertIn("Kesimpulan", markdown)
         self.assertIn("analysis_years = [2014, 2018, 2022]", code)
         self.assertIn("alpha_prior = 1.0", code)
         self.assertIn("beta_prior = 1.0", code)
@@ -93,6 +106,55 @@ class AssignmentArtifactTests(unittest.TestCase):
         self.assertIn("credible_interval_from_pmf", code)
         self.assertIn("goodness_of_fit_rows", code)
         self.assertIn("posterior untuk 2026", markdown.lower())
+        self.assertNotIn("draft teman", markdown.lower())
+
+    def test_notebook_contains_saved_outputs_for_review(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        code_cells = [
+            cell for cell in notebook["cells"]
+            if cell.get("cell_type") == "code"
+        ]
+        output_cells = [
+            cell for cell in code_cells
+            if cell.get("outputs")
+        ]
+
+        self.assertGreaterEqual(len(output_cells), 4)
+
+    def test_notebook_contains_saved_matplotlib_graph_outputs(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        image_outputs = []
+
+        for cell in notebook["cells"]:
+            if cell.get("cell_type") != "code":
+                continue
+            for output in cell.get("outputs", []):
+                data = output.get("data", {})
+                if "image/png" in data:
+                    image_outputs.append(output)
+
+        self.assertGreaterEqual(len(image_outputs), 4)
+
+    def test_notebook_generates_slide_graph_assets(self):
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        code = "\n".join(
+            "".join(cell.get("source", []))
+            for cell in notebook["cells"]
+            if cell.get("cell_type") == "code"
+        )
+
+        generated_assets = [
+            "goals_by_edition.png",
+            "prior_posterior_gamma.png",
+            "goal_frequency_fit.png",
+            "posterior_predictive_2026.png",
+        ]
+
+        self.assertIn("ASSET_DIR", code)
+        self.assertIn("save_figure", code)
+        for asset in generated_assets:
+            with self.subTest(asset=asset):
+                self.assertIn(asset, code)
 
     def test_visible_language_is_polished_indonesian(self):
         visible_text = SLIDES.read_text(encoding="utf-8")
